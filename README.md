@@ -4,7 +4,7 @@ The little markdown previewer.
 He watches a file for changes and updates a HTML preview,
 possible styled with a custom css.
 
-Pressing <ESC> makes him go away.
+Pressing ESC makes him go away.
 
 ## Installation
 ```
