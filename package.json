@@ -1,0 +1,28 @@
+{
+  "name": "marky",
+  "version": "0.1.0",
+  "description": "The little markdown previewer",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/neochrome/marky"
+	},
+  "main": "main.html",
+	"single-instance": false,
+  "bin": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "window": {
+    "title": "Marky",
+		"icon": "icon.png",
+    "toolbar": false,
+    "show": false
+  },
+  "dependencies": {
+    "commander": "^2.5.0",
+    "glob": "^4.0.6",
+    "markdown": "^0.5.0",
+    "node-watch": "^0.3.4",
+    "nodewebkit": "^0.10.5"
+  }
+}
