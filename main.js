@@ -1,8 +1,17 @@
-var gui      = require('nw.gui');
-var watch    = require('node-watch');
-var path     = require('path');
-var fs       = require('fs');
-var marked   = require('marked');
+var gui    = require('nw.gui');
+var watch  = require('node-watch');
+var path   = require('path');
+var fs     = require('fs');
+var marked = require('marked');
+var hljs   = require('highlight.js');
+
+marked.setOptions({
+	highlight: function (code, lang) {
+		if (lang === 'none') { return code; }
+		if (hljs.getLanguage(lang)) { return hljs.fixMarkup(hljs.highlight(lang, code, true).value); }
+		return hljs.fixMarkup(hljs.highlightAuto(code).value);
+	}
+});
 
 var render = function (file) {
 	fs.readFile(file, function (err, content) {
