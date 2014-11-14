@@ -2,12 +2,11 @@ var gui      = require('nw.gui');
 var watch    = require('node-watch');
 var path     = require('path');
 var fs       = require('fs');
-var markdown = require('markdown').markdown;
+var marked   = require('marked');
 
 var render = function (file) {
 	fs.readFile(file, function (err, content) {
-		var html = markdown.toHTML(content.toString());
-		document.getElementById('content').innerHTML = html;
+		document.getElementById('content').innerHTML = marked(content.toString());
 	});
 };
 
