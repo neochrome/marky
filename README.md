@@ -32,3 +32,10 @@ $ marky --style mystyles.css README.md
 - http://kevinburke.bitbucket.org/markdowncss/
 - https://github.com/sindresorhus/github-markdown-css
 - https://github.com/thomasf/solarized-css
+
+
+## Release notes
+1. make sure wc is clean and all commited
+2. execute: `npm version major | minor | patch`
+3. execute: `git push --all; git push --tags`
+4. profit
