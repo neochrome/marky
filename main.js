@@ -1,9 +1,10 @@
-var gui    = require('nw.gui');
-var watch  = require('node-watch');
-var path   = require('path');
-var fs     = require('fs');
-var marked = require('marked');
-var hljs   = require('highlight.js');
+var gui      = require('nw.gui');
+var chokidar = require('chokidar');
+var path     = require('path');
+var fs       = require('fs');
+var marked   = require('marked');
+var hljs     = require('highlight.js');
+var util     = require('util');
 
 marked.setOptions({
 	highlight: function (code, lang) {
@@ -13,9 +14,12 @@ marked.setOptions({
 	}
 });
 
-var render = function (file) {
+var render = function (content) {
+	document.getElementById('content').innerHTML = marked(content);
+};
+var renderFile = function (file) {
 	fs.readFile(file, function (err, content) {
-		document.getElementById('content').innerHTML = marked(content.toString());
+		render(content.toString());
 	});
 };
 
@@ -27,5 +31,20 @@ document.onkeyup = function (e) { if (e.keyCode == 27) { gui.App.closeAllWindows
 document.getElementById('style').href = style;
 document.title = 'Marky: ' + path.basename(file);
 
-watch(file, render);
-render(file);
+chokidar
+.watch(file)
+.on('error', function (err) {
+	console.log('error: %s', err.toString());
+	render(util.format('### Error\n```none\n%s\n```', err.toString()));
+})
+.on('change', function (path) {
+	console.log('changed: %s', path);
+	renderFile(path);
+})
+.on('unlink', function (path) {
+	console.log('deleted: %s', path);
+	render(util.format('### %s was deleted', path));
+})
+.on('ready', function () {
+	renderFile(file);
+});
