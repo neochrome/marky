@@ -26,6 +26,8 @@ $ marky --style github README.md
 ```
 $ marky --style mystyles.css README.md
 ```
+Code highlighting is done using [hightlight.js](https://highlightjs.org/) and
+custom code styling may be done by including rules matching those used by that lib.
 
 ## Acknowledgements
 - https://github.com/dcurtis/markdown-mark
