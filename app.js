@@ -56,4 +56,6 @@ if (program.args.length !== 1) { return displayErrorAndExit('No single <file> sp
 if (!fs.existsSync(program.args[0])) { return displayErrorAndExit('<file> not found: %s', program.args[0]); }
 var file = path.resolve(program.args[0]);
 
-spawn(nw, [__dirname, style, file]);
+var env = process.env;
+env.LD_LIBRARY_PATH = path.resolve('lib/');
+spawn(nw, [__dirname, style, file], { env: env });
