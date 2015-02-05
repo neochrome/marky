@@ -57,5 +57,5 @@ if (!fs.existsSync(program.args[0])) { return displayErrorAndExit('<file> not fo
 var file = path.resolve(program.args[0]);
 
 var env = process.env;
-env.LD_LIBRARY_PATH = path.resolve('lib/');
+env.LD_LIBRARY_PATH = path.join(__dirname, 'lib/');
 spawn(nw, [__dirname, style, file], { env: env });
