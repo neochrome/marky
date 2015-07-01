@@ -1,0 +1,6 @@
+{
+	"env": ["node", "browser"],
+	"rules": {
+		"no-process-exit": 0
+	}
+}
