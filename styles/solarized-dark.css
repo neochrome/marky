@@ -1,7 +1,7 @@
 @import url(http://fonts.googleapis.com/css?family=Inconsolata);
 @import url(http://fonts.googleapis.com/css?family=PT+Sans);
 @import url(http://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700);
-@import url('../node_modules/highlight.js/styles/solarized_dark.css');
+@import url('../node_modules/highlight.js/styles/solarized-dark.css');
 article,
 aside,
 details,
@@ -188,7 +188,6 @@ body {
 }
 code {
   background-color: #073642;
-  padding: 2px;
 }
 a {
   color: #b58900;
