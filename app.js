@@ -1,76 +1,68 @@
-#!/usr/bin/env node
-'use strict';
-var program = require('commander');
-var version = require('./package.json').version;
-var glob    = require('glob');
-var path    = require('path');
-var fs      = require('fs');
-var util    = require('util');
-var spawn   = require('child_process').spawn;
-var nw      = require('nodewebkit').findpath();
+const program = require('commander');
+const version = require('./package.json').version;
+const { app, BrowserWindow } = require('electron');
+const glob = require('glob');
+const path = require('path');
+const hljs = require('highlight.js');
+const marked = require('marked');
+const fs = require('fs');
+const util = require('util');
 
-var displayHotkeys = function () {
-	console.log('  Hotkeys:');
-	console.log();
-	console.log('    ESC - close the preview window and quit.');
-	console.log();
-};
-
-var builtinStyles = glob.sync(path.join(__dirname, 'styles', '*.css'))
-	.reduce(function (styles, filename) {
+const builtinStyles = glob.sync(path.join(__dirname, 'styles', '*.css'))
+	.reduce((styles, filename) => {
 		styles[path.basename(filename, '.css')] = path.join('styles', path.basename(filename));
 		return styles;
 	}, {});
 
-var displayBuiltinStyles = function () {
+function displayHelp () {
+	console.log();
+	console.log('  Hotkeys:');
+	console.log();
+	console.log('    ESC - close the preview window and quit.');
+	console.log();
 	console.log('  Builtin styles (default is "markdown"):');
 	console.log();
 	for (var name in builtinStyles) {
 		console.log('    %s', name);
 	}
 	console.log();
-};
+}
 
-var displayErrorAndExit = function () {
+function displayErrorAndExit () {
 	console.error();
 	console.error('  error: %s', util.format.apply(undefined, arguments));
 	console.error();
-	process.exit(1);
-};
+	app.exit(1);
+}
 
-var validateStyle = function (filename) {
+function validateStyle (filename) {
 	if (builtinStyles.hasOwnProperty(filename)) { return builtinStyles[filename]; }
 	if (fs.existsSync(filename)) { return path.resolve(filename); }
-	displayErrorAndExit('style not found: %s.', filename);
-};
-
-var increaseVerbosity = function (v, total) {
-	return total + 1;
-};
+	displayErrorAndExit('style not found: %s', filename);
+}
 
 program
 	.version(version)
 	.usage('[options] <file>')
 	.option('-s, --style <style>', 'specify custom .css or builtin style', validateStyle)
-	.option('-v, --verbose', 'display additional information (use multiple time to increase)', increaseVerbosity, 0)
+	.option('-v, --verbose', 'display additional information (use multiple time to increase)', (_, total) => total + 1, 0)
 	.option('-d, --dev-tools', 'enable dev tools')
-	.on('--help', displayHotkeys)
-	.on('--help', displayBuiltinStyles)
+	.on('--help', displayHelp)
 	.parse(process.argv);
 
-var info = function () {
+function info () {
 	if (program.verbose > 0) {
 		console.log.apply(console, arguments);
 	}
 };
 
-var debug = function () {
+function debug () {
 	if (program.verbose > 1) {
 		console.log.apply(console, arguments);
 	}
 };
 
-var style = program.style || 'styles/markdown.css';
+const style = program.style || 'styles/markdown.css';
 info('style: %s', style);
 
 if (program.args.length !== 1) { return displayErrorAndExit('No single <file> specified.'); }
@@ -78,12 +70,46 @@ if (!fs.existsSync(program.args[0])) { return displayErrorAndExit('<file> not fo
 var file = path.resolve(program.args[0]);
 info('file: %s', file);
 
-var env = process.env;
-env.LD_LIBRARY_PATH = path.join(__dirname, 'lib/');
-debug('LD_LIBRARY_PATH: %s', env.LD_LIBRARY_PATH);
+marked.setOptions({
+	highlight: (code, lang) => {
+		if (lang === 'none') { return code; }
+		return hljs.highlightAuto(code).value;
+	}
+});
 
-var args = [__dirname, style, file, program.devTools || false];
-debug('spawning: %s %s', nw, JSON.stringify(args));
-var nwProcess = spawn(nw, args, { env: env });
-nwProcess.stdout.on('data', function (data) { debug('stdout: %s', data.toString()); });
-nwProcess.stderr.on('data', function (data) { debug('stderr: %s', data.toString()); });
+let win;
+function createWindow () {
+	win = new BrowserWindow({ center: true, icon: './icon.png' });
+	win.setMenu(null);
+	win.loadURL(`file://${__dirname}/index.html#style=${style}&file=${file}`);
+	win.on('closed', () => win = null);
+	win.webContents.on('before-input-event', (event, input) => {
+		if (input.type === 'keyDown' && input.code === 'Escape') { app.quit(); }
+	});
+	win.webContents.once('did-finish-load', update);
+	if (program.devTools) { win.webContents.openDevTools(); }
+}
+
+function update () {
+	fs.readFile(file, (err, data) => {
+		if (err) { return console.error(err); }
+		win.webContents.send('content', marked(data.toString()));
+	});
+}
+
+app.on('ready', () => {
+	createWindow();
+	fs.watch(file, (eventType, _) => {
+		debug('event: %s', eventType);
+		if (eventType === 'change') {
+			info('changed: %s', file);
+			update();
+		}
+	});
+});
+app.on('window-all-closed', () => {
+	if (process.platform !== 'darwin') { app.quit(); }
+});
+app.on('activate', () => {
+	if (!win) { createWindow(); }
+});

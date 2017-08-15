@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>Marky</title>
+		<link id="style" rel="stylesheet" href="styles/none.css"/>
+	</head>
+	<body>
+		<article id="content" class="markdown-body"></article>
+		<script>
+			const options = location.hash
+				.substring(1)
+				.split('&')
+				.map(kv => kv.split('='))
+				.reduce((o, p) => { o[p[0]] = p[1]; return o; }, {});
+			document.title = `Marky - ${options.file}`;
+			document.getElementById('style').href = options.style || 'styles/none.css';
+			require('electron').ipcRenderer.on('content', (_, html) => {
+				document.getElementById('content').innerHTML = html;
+			});
+		</script>
+	</body>
+</html>
