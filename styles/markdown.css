@@ -1,4 +1,4 @@
-@import url('../node_modules/highlight.js/styles/solarized_dark.css');
+@import url('../node_modules/highlight.js/styles/github.css');
 body{
     margin: 0 auto;
     font-family: Georgia, Palatino, serif;
