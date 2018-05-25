@@ -6,16 +6,13 @@
     "type": "git",
     "url": "https://github.com/neochrome/marky"
   },
-  "main": "app.js",
   "bin": "marky.js",
   "scripts": {
-    "start": "electron app.js"
+    "start": "node marky.js"
   },
   "dependencies": {
-    "commander": "^2.11.0",
-    "electron": "^1.7.5",
-    "glob": "^7.1.2",
+    "commander": "^2.15.1",
     "highlight.js": "^9.12.0",
-    "marked": "^0.3.6"
+    "marked": "^0.4.0"
   }
 }
