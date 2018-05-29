@@ -1,10 +1,8 @@
 # Marky
 The little markdown previewer.
 
-He watches a file for changes and updates a HTML preview,
-possible styled with a custom css.
-
-Pressing ESC makes him go away.
+Starts a minimal webserver which renders a HTML preview
+of the specified markdown file with auto refresh on changes.
 
 ## Installation
 ```
@@ -22,12 +20,8 @@ $ marky README.md
 $ marky --style github README.md
 ```
 
-#### With custom stylesheet
-```
-$ marky --style mystyles.css README.md
-```
-Code highlighting is done using [hightlight.js](https://highlightjs.org/) and
-custom code styling may be done by including rules matching those used by that lib.
+#### Code highlighting
+Code highlighting is done using [hightlight.js](https://highlightjs.org/)
 
 ## Acknowledgements
 - https://github.com/dcurtis/markdown-mark
