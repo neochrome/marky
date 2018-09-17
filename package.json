@@ -1,6 +1,7 @@
 {
   "name": "marky",
   "version": "1.0.0",
+  "license": "Unlicense",
   "description": "The little markdown previewer",
   "repository": {
     "type": "git",
